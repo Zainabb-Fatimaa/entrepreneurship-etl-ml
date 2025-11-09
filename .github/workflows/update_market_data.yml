@@ -1,0 +1,76 @@
+name: Update Live Market Data (Hourly)
+
+on:
+  schedule:
+    - cron: '0 14-22 * * 1-5'
+    - cron: '0 */4 * * 0,6'
+
+  workflow_dispatch:
+
+jobs:
+  update-market-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-market
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas yfinance sqlalchemy psycopg2-binary python-dotenv
+    
+    - name: Create cache directory
+      run: mkdir -p data/api_cache
+    
+    - name: Fetch and Update Market Data
+      run: python update_market_data.py
+      env:
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_SSLMODE: ${{ secrets.DB_SSLMODE }}
+        PYTHONUNBUFFERED: 1
+      timeout-minutes: 8
+    
+    - name: Upload Market Data Cache
+      uses: actions/upload-artifact@v3
+      if: success()
+      with:
+        name: market-data-${{ github.run_number }}
+        path: data/api_cache/live_market_data.csv
+        retention-days: 3
+    
+    - name: Report Status
+      if: always()
+      run: |
+        echo "## Market Data Update Summary" >> $GITHUB_STEP_SUMMARY
+        echo "**Run ID:** ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+        echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Connection:** Session Pooler" >> $GITHUB_STEP_SUMMARY
+        if [ -f data/api_cache/live_market_data.csv ]; then
+          RECORD_COUNT=$(tail -n +2 data/api_cache/live_market_data.csv | wc -l)
+          echo "**Records Updated:** $RECORD_COUNT" >> $GITHUB_STEP_SUMMARY
+        fi
+    
+    - name: Notify on Failure
+      if: failure()
+      run: |
+        echo "::error::Market data update failed. Check logs for details."

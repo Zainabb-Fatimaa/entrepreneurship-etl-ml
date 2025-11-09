@@ -1,0 +1,101 @@
+competitor_id,company_name,industry,estimated_revenue,employee_count,market_share,growth_rate,funding_stage,competitive_advantage
+COMP000000,"Davis, Hale and Williams",EdTech,35003914.99,3901,0.78,-3.67,Series A,Brand
+COMP000001,Hill Ltd,CleanTech,21335620.88,2554,14.49,58.95,Pre-Seed,Technology
+COMP000002,"Carter, Hendricks and Wolfe",HealthTech,2623819.97,4831,7.54,41.41,Series A,Technology
+COMP000003,"Barrera, Kerr and Jenkins",FinTech,37476231.11,2161,8.99,49.83,Series C,Technology
+COMP000004,"Martinez, Wood and Campos",SaaS,28751025.79,2590,4.11,99.72,Pre-Seed,Cost
+COMP000005,"Miranda, Nguyen and Hayes",EdTech,2210616.59,4997,7.78,78.86,Series A,Network Effect
+COMP000006,Clark-Williams,FoodTech,46470125.3,3245,11.86,48.21,Series B,Market Position
+COMP000007,Jones Ltd,HealthTech,10013322.72,4845,6.87,3.23,Series B,Brand
+COMP000008,"Brady, James and Reese",SaaS,5192565.39,3139,14.35,6.33,Series B,Cost
+COMP000009,Sanders Inc,FinTech,24302567.54,4687,4.36,15.66,Seed,Cost
+COMP000010,Wilson-Stark,CleanTech,9232465.13,4232,10.21,55.46,Series C,Network Effect
+COMP000011,Santiago-Marshall,HealthTech,49783961.39,3664,12.2,-2.63,Series A,Market Position
+COMP000012,Jones-Kelley,CleanTech,42421264.41,1153,0.88,41.4,Series C,Brand
+COMP000013,Reeves Group,EdTech,5373990.27,3374,1.3,7.42,Growth,Technology
+COMP000014,Ruiz LLC,SaaS,4844394.69,4480,14.18,77.91,Seed,Cost
+COMP000015,Jackson Inc,FoodTech,45051539.78,927,1.71,38.89,Pre-Seed,Network Effect
+COMP000016,"Garcia, Phillips and Nichols",SaaS,46397388.28,4173,0.94,80.24,Pre-Seed,Network Effect
+COMP000017,Jackson-Powers,CleanTech,44718763.05,2501,8.26,7.68,Pre-Seed,Brand
+COMP000018,Byrd and Sons,AI/ML,26145119.99,1919,8.78,38.44,Series C,Cost
+COMP000019,Howard-Robinson,FoodTech,46632097.86,4426,3.0,79.31,Series A,Network Effect
+COMP000020,Stafford PLC,FinTech,20997500.23,2633,7.36,0.31,Seed,Market Position
+COMP000021,Ramos Inc,CleanTech,28215111.86,2463,9.14,0.07,Growth,Technology
+COMP000022,"Cain, Davidson and Moran",EdTech,25593824.36,4103,10.28,54.95,Seed,Network Effect
+COMP000023,Myers LLC,CleanTech,28028476.62,4144,2.68,69.88,Series B,Network Effect
+COMP000024,Williams-Smith,FoodTech,33262713.01,419,4.37,54.77,Seed,Technology
+COMP000025,Wang-Mcfarland,SaaS,45245603.44,734,11.96,36.59,Series A,Brand
+COMP000026,Kerr-Gonzalez,FinTech,24768338.28,4530,9.81,9.47,Series A,Network Effect
+COMP000027,Fisher Inc,E-commerce,16732015.01,3101,5.63,75.69,Series B,Network Effect
+COMP000028,Hoover-Frazier,CleanTech,9168090.02,380,13.33,91.88,Growth,Cost
+COMP000029,Walker Inc,CleanTech,19248160.75,2046,10.95,92.91,Series B,Technology
+COMP000030,"Jackson, Jackson and Perry",SaaS,22707682.35,2569,2.7,38.83,Seed,Network Effect
+COMP000031,Ochoa LLC,AI/ML,5200262.79,1176,2.82,92.68,Series C,Market Position
+COMP000032,"Sims, Weber and Villa",CleanTech,13833339.86,4488,2.31,45.28,Series C,Market Position
+COMP000033,Mcmillan-Martinez,SaaS,26777641.6,4373,10.6,15.07,Pre-Seed,Brand
+COMP000034,Rodriguez LLC,EdTech,49252120.57,3247,7.45,98.97,Series C,Brand
+COMP000035,Smith Ltd,HealthTech,21303230.29,529,1.79,-1.88,Pre-Seed,Network Effect
+COMP000036,Smith-Lewis,E-commerce,17951580.92,4922,9.78,7.96,Seed,Brand
+COMP000037,Jones LLC,HealthTech,11709180.27,3902,10.94,88.39,Series A,Market Position
+COMP000038,"Hanson, Williams and Mcclure",E-commerce,2285163.98,2094,5.16,46.21,Series B,Cost
+COMP000039,Turner-George,FinTech,45509486.92,2961,13.64,20.63,Series A,Brand
+COMP000040,Marquez PLC,EdTech,13182918.52,807,6.72,61.53,Seed,Cost
+COMP000041,King Inc,SaaS,1509922.6,4656,6.54,82.96,Series B,Brand
+COMP000042,"Nguyen, Mccoy and Price",HealthTech,38642753.46,1048,10.65,55.4,Series C,Network Effect
+COMP000043,"Anderson, Thompson and Gill",FinTech,27380548.48,33,13.06,40.79,Series C,Market Position
+COMP000044,"Stewart, York and Olson",HealthTech,13647779.71,3637,4.43,46.87,Pre-Seed,Market Position
+COMP000045,Smith-Barr,AI/ML,31165121.05,3241,9.59,94.19,Series C,Brand
+COMP000046,Reyes-Davidson,E-commerce,34974149.26,4775,6.24,58.04,Series B,Cost
+COMP000047,Gordon Ltd,CleanTech,28404347.76,749,5.25,54.72,Series A,Technology
+COMP000048,Hall PLC,HealthTech,6293429.33,1114,10.97,64.75,Pre-Seed,Brand
+COMP000049,Parker Ltd,AI/ML,12395185.45,3135,13.39,-5.11,Pre-Seed,Technology
+COMP000050,Todd-Harvey,FoodTech,4022455.65,516,3.79,55.56,Series C,Brand
+COMP000051,Taylor Group,E-commerce,21120316.4,2046,6.46,68.03,Seed,Technology
+COMP000052,Harris-Bennett,SaaS,16449926.76,4921,1.31,43.41,Pre-Seed,Technology
+COMP000053,"Johnson, Mclean and George",SaaS,40368978.64,2457,8.19,53.84,Seed,Technology
+COMP000054,Stevenson-Murphy,SaaS,46033371.51,3082,10.39,20.14,Growth,Network Effect
+COMP000055,Stewart-Buchanan,CleanTech,21623866.26,3372,1.23,76.81,Series A,Market Position
+COMP000056,Meyer Group,FinTech,41027549.58,2555,5.06,85.17,Series B,Brand
+COMP000057,"Hess, Christensen and Perez",AI/ML,26922146.03,249,8.78,76.08,Series A,Cost
+COMP000058,"Rivera, Allen and Ryan",E-commerce,9695147.15,4158,12.18,-6.82,Seed,Market Position
+COMP000059,"Mcneil, Solis and Horton",AI/ML,12978618.27,3323,13.2,76.16,Growth,Market Position
+COMP000060,Franklin Group,CleanTech,16891715.92,2379,1.29,33.61,Series A,Network Effect
+COMP000061,"Morris, Ramos and Smith",AI/ML,11522215.58,449,0.63,92.51,Series B,Market Position
+COMP000062,Jones-Lee,EdTech,6008872.78,1256,4.76,95.96,Series B,Brand
+COMP000063,"Braun, Mays and Martinez",FoodTech,34728086.53,3892,5.0,4.78,Series A,Network Effect
+COMP000064,Watkins and Sons,HealthTech,19568161.34,859,1.65,20.9,Pre-Seed,Technology
+COMP000065,Romero Group,AI/ML,45544874.36,4133,12.32,17.63,Series C,Brand
+COMP000066,"Mcdonald, Martin and Gonzalez",FinTech,405352.41,4407,0.72,42.2,Series C,Brand
+COMP000067,Thompson-Wright,FoodTech,35577255.93,4587,2.35,86.21,Seed,Network Effect
+COMP000068,Ray-Faulkner,AI/ML,22260008.13,121,14.0,20.05,Seed,Brand
+COMP000069,Nelson Group,SaaS,42651815.52,3491,1.6,70.35,Seed,Technology
+COMP000070,Tapia LLC,E-commerce,26485218.21,1884,11.16,87.29,Series A,Market Position
+COMP000071,Gray-Ruiz,CleanTech,17351389.62,4832,11.08,85.3,Series C,Technology
+COMP000072,Wagner-Moss,FoodTech,27749970.81,1392,5.84,19.12,Series C,Market Position
+COMP000073,Weiss Group,SaaS,6483043.43,4576,10.57,15.58,Series A,Cost
+COMP000074,Gill Group,AI/ML,39866103.87,2208,1.18,64.34,Series B,Cost
+COMP000075,Blake LLC,SaaS,32675780.52,2346,9.96,27.24,Seed,Market Position
+COMP000076,"Medina, Tran and Thompson",HealthTech,5659042.64,1595,2.74,68.42,Series B,Cost
+COMP000077,Ford-Chavez,FoodTech,34140387.63,705,7.04,89.13,Series B,Market Position
+COMP000078,Hart-Castillo,E-commerce,33258452.61,1372,7.59,-6.62,Series C,Network Effect
+COMP000079,Taylor-Harrison,CleanTech,34285641.48,606,13.52,28.9,Pre-Seed,Network Effect
+COMP000080,Hendricks Inc,FinTech,40079686.36,561,9.3,32.57,Seed,Technology
+COMP000081,Hensley Ltd,SaaS,16514670.47,1602,0.98,56.98,Seed,Cost
+COMP000082,"Brooks, Sullivan and Perry",EdTech,13411590.01,1889,5.3,15.25,Series A,Technology
+COMP000083,Waller-Brooks,FinTech,42906139.83,860,7.96,68.67,Series B,Brand
+COMP000084,Parker-Archer,FoodTech,25307308.45,4222,13.62,82.68,Series A,Market Position
+COMP000085,Ortiz Inc,SaaS,12779719.96,2954,4.29,37.02,Series C,Market Position
+COMP000086,Cruz PLC,AI/ML,34452857.98,3902,9.24,13.92,Growth,Network Effect
+COMP000087,Lee Group,HealthTech,876922.78,2635,3.99,55.53,Seed,Network Effect
+COMP000088,Wise-Walton,FoodTech,48021214.94,4208,10.09,86.15,Growth,Brand
+COMP000089,Hicks-Burns,CleanTech,49409782.38,4332,7.96,7.05,Growth,Network Effect
+COMP000090,"Richardson, Brown and Cruz",FinTech,15373145.06,2586,7.48,67.34,Series B,Technology
+COMP000091,Fitzgerald-Allen,SaaS,42003309.13,1136,4.18,15.58,Pre-Seed,Network Effect
+COMP000092,Dorsey LLC,CleanTech,35552582.77,1443,4.38,89.5,Series C,Market Position
+COMP000093,"Mann, Johnson and Wade",FoodTech,8220428.37,1938,3.95,77.16,Seed,Technology
+COMP000094,Green Group,FoodTech,1601169.76,1297,14.18,52.32,Seed,Network Effect
+COMP000095,"Hernandez, Wright and Lane",FinTech,35613365.11,4573,13.9,8.46,Pre-Seed,Technology
+COMP000096,"Skinner, Smith and Wise",HealthTech,843651.29,1894,3.05,-9.77,Pre-Seed,Network Effect
+COMP000097,"Dawson, Cruz and Mccarthy",CleanTech,23119325.62,3118,2.16,90.1,Series C,Network Effect
+COMP000098,Stone and Sons,FoodTech,35771811.18,1006,0.66,-0.8,Series A,Market Position
+COMP000099,Martin-Simmons,AI/ML,19247423.22,771,4.69,90.9,Seed,Network Effect

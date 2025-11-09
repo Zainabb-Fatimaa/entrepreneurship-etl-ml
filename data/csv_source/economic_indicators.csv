@@ -1,0 +1,13 @@
+indicator_id,date,gdp_growth_rate,unemployment_rate,inflation_rate,interest_rate,market_volatility_index,venture_capital_index,startup_confidence_score,data_source
+IND0000,2024-11-09,2.5,4.6,2.44,3.94,7.77,110.4,79.9,Combined: Government Data + Yahoo Finance API
+IND0001,2024-12-09,3.03,3.6,2.11,5.19,7.77,110.9,73.8,Combined: Government Data + Yahoo Finance API
+IND0002,2025-01-08,2.2,4.5,5.05,2.31,7.77,98.2,72.9,Combined: Government Data + Yahoo Finance API
+IND0003,2025-02-07,3.09,4.8,5.25,4.35,7.77,104.0,63.7,Combined: Government Data + Yahoo Finance API
+IND0004,2025-03-09,2.06,5.3,5.9,4.47,7.77,104.3,64.9,Combined: Government Data + Yahoo Finance API
+IND0005,2025-04-08,2.08,4.6,2.99,3.62,7.77,99.6,62.0,Combined: Government Data + Yahoo Finance API
+IND0006,2025-05-08,2.1,5.7,3.44,3.86,7.77,100.5,67.5,Combined: Government Data + Yahoo Finance API
+IND0007,2025-06-07,3.6,3.9,4.82,2.09,7.77,106.3,64.5,Combined: Government Data + Yahoo Finance API
+IND0008,2025-07-07,3.06,4.8,3.42,3.49,7.77,103.6,66.3,Combined: Government Data + Yahoo Finance API
+IND0009,2025-08-06,2.06,3.8,2.02,2.7,7.77,108.4,81.8,Combined: Government Data + Yahoo Finance API
+IND0010,2025-09-05,2.4,4.5,5.29,5.22,7.77,103.8,66.4,Combined: Government Data + Yahoo Finance API
+IND0011,2025-10-05,2.87,4.5,5.29,2.28,7.77,106.7,73.1,Combined: Government Data + Yahoo Finance API

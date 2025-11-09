@@ -1,0 +1,10 @@
+pandas
+numpy
+faker
+yfinance
+requests
+psycopg2-binary 
+python-dotenv
+plotly
+scikit-learn
+sqlalchemy

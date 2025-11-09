@@ -1,0 +1,15 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+.Python
+myenv/
+
+
+# Analytics output
+analytics/
+*.html
+
+# Logs
+*.log

@@ -1,0 +1,26 @@
+accelerator_id,accelerator_name,location,cohort,year,startups_accepted,equity_taken,funding_provided,success_rate
+ACC0000,Y Combinator,"Mountain View, CA",Cohort 1,2022,55,5.5,57283,60.7
+ACC0001,Y Combinator,"Mountain View, CA",Cohort 2,2024,184,7.0,88788,64.2
+ACC0002,Y Combinator,"Mountain View, CA",Cohort 3,2022,12,7.9,62813,89.5
+ACC0003,Y Combinator,"Mountain View, CA",Cohort 4,2021,162,6.4,36883,60.5
+ACC0004,Y Combinator,"Mountain View, CA",Cohort 5,2024,59,8.5,68067,89.8
+ACC0005,Techstars,"Boulder, CO",Cohort 1,2022,107,9.2,28653,84.3
+ACC0006,Techstars,"Boulder, CO",Cohort 2,2020,64,8.6,94562,77.9
+ACC0007,Techstars,"Boulder, CO",Cohort 3,2021,137,9.1,121759,62.9
+ACC0008,Techstars,"Boulder, CO",Cohort 4,2023,40,5.7,45002,72.7
+ACC0009,Techstars,"Boulder, CO",Cohort 5,2022,150,6.6,68062,71.6
+ACC0010,500 Startups,"San Francisco, CA",Cohort 1,2021,37,9.2,53994,88.2
+ACC0011,500 Startups,"San Francisco, CA",Cohort 2,2021,13,5.7,83157,87.9
+ACC0012,500 Startups,"San Francisco, CA",Cohort 3,2023,25,6.8,41227,74.4
+ACC0013,500 Startups,"San Francisco, CA",Cohort 4,2024,73,6.4,41804,78.0
+ACC0014,500 Startups,"San Francisco, CA",Cohort 5,2020,66,8.6,146352,62.6
+ACC0015,Plug and Play,"Sunnyvale, CA",Cohort 1,2023,12,7.1,37037,63.8
+ACC0016,Plug and Play,"Sunnyvale, CA",Cohort 2,2022,77,8.3,138111,63.2
+ACC0017,Plug and Play,"Sunnyvale, CA",Cohort 3,2022,43,9.8,40787,84.8
+ACC0018,Plug and Play,"Sunnyvale, CA",Cohort 4,2020,38,8.5,133567,68.6
+ACC0019,Plug and Play,"Sunnyvale, CA",Cohort 5,2021,17,5.6,100758,70.9
+ACC0020,MassChallenge,"Boston, MA",Cohort 1,2023,73,7.8,120717,79.2
+ACC0021,MassChallenge,"Boston, MA",Cohort 2,2022,64,9.5,60404,78.7
+ACC0022,MassChallenge,"Boston, MA",Cohort 3,2022,66,8.0,122023,89.9
+ACC0023,MassChallenge,"Boston, MA",Cohort 4,2022,46,7.1,42607,88.4
+ACC0024,MassChallenge,"Boston, MA",Cohort 5,2022,71,9.2,37938,85.1

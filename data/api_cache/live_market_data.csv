@@ -1,0 +1,9 @@
+ticker,company_name,current_price,market_cap,volume,price_change_30d,sector,fetch_date
+AAPL,Apple Inc.,268.47,3967007326208,48203600,4.03,Technology,2025-11-09 23:02:47
+GOOGL,Alphabet Inc.,278.83,3369345482752,34440600,13.98,Communication Services,2025-11-09 23:02:49
+MSFT,Microsoft Corporation,496.82,3692554092544,23980600,-5.34,Technology,2025-11-09 23:02:51
+TSLA,"Tesla, Inc.",429.52,1428505755648,103091100,-2.09,Consumer Cyclical,2025-11-09 23:02:53
+NVDA,NVIDIA Corporation,188.15,4580888281088,264204000,-0.51,Technology,2025-11-09 23:02:55
+META,"Meta Platforms, Inc.",621.71,1567037325312,29868200,-13.39,Communication Services,2025-11-09 23:02:57
+^GSPC,S&P 500,6728.8,0,5926070000,-0.37,Technology,2025-11-09 23:02:59
+^IXIC,NASDAQ Composite,23004.54,0,10141910000,-0.17,Technology,2025-11-09 23:03:01

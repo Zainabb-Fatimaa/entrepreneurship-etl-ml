@@ -1,0 +1,183 @@
+name: Daily ETL Pipeline with Incremental Updates
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+
+  workflow_dispatch: {}
+
+  push:
+    branches: [ main ]
+    paths:
+      - 'etl_pipeline.py'
+      - 'update_source_data.py'
+      - '.github/workflows/etl_pipeline.yml'
+
+jobs:
+  etl-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout code (includes committed data files)
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Verify data files exist
+      run: |
+        echo " Checking for data files..."
+        ls -lh data/oltp1_startups/ || echo " OLTP1 directory missing"
+        ls -lh data/oltp2_investors/ || echo " OLTP2 directory missing"
+        ls -lh data/csv_source/ || echo " CSV directory missing"
+        ls -lh data/api_cache/ || echo " API cache directory missing"
+        
+        if [ -f "data/oltp1_startups/startup_oltp.db" ]; then
+          echo " Startup database found"
+        else
+          echo " Startup database NOT found"
+          exit 1
+        fi
+    
+    - name: Show current data statistics (BEFORE update)
+      run: |
+        python - <<'PY'
+        import sqlite3
+        import pandas as pd
+
+        conn1 = sqlite3.connect('data/oltp1_startups/startup_oltp.db')
+        startups = pd.read_sql('SELECT COUNT(*) as count FROM startups', conn1)
+        funding = pd.read_sql('SELECT COUNT(*) as count FROM funding_rounds', conn1)
+        conn1.close()
+
+        print('📈 Current Data (BEFORE Update):')
+        print(f'  Startups: {startups["count"].iloc[0]}')
+        print(f'  Funding Rounds: {funding["count"].iloc[0]}')
+        PY
+    
+    - name: Incremental Source Data Update
+      run: python update_source_data.py
+      env:
+        PYTHONUNBUFFERED: 1
+    
+    - name: Update Live Market Data
+      run: python update_market_data.py
+      env:
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_SSLMODE: ${{ secrets.DB_SSLMODE }}
+        PYTHONUNBUFFERED: 1
+      timeout-minutes: 5
+    
+    - name: Run ETL Pipeline
+      run: python etl_pipeline.py
+      env:
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_SSLMODE: ${{ secrets.DB_SSLMODE }}
+        PYTHONUNBUFFERED: 1
+      timeout-minutes: 15
+    
+    - name: Generate Analytics Dashboard
+      run: python analytics_dashboard.py
+      env:
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_SSLMODE: ${{ secrets.DB_SSLMODE }}
+        PYTHONUNBUFFERED: 1
+      timeout-minutes: 10
+    
+    - name: Run ML Models
+      run: python ml_models.py
+      env:
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_SSLMODE: ${{ secrets.DB_SSLMODE }}
+        PYTHONUNBUFFERED: 1
+      timeout-minutes: 10
+    
+    - name: Commit updated data files (optional)
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "actions@github.com"
+        git add data/
+        git diff --quiet && git diff --staged --quiet || git commit -m " Automated data update - $(date '+%Y-%m-%d %H:%M')"
+        git push || echo "No changes to commit"
+      continue-on-error: true
+    
+    - name: Upload Analytics Artifacts
+      uses: actions/upload-artifact@v3
+      if: ${{ success() }}
+      with:
+        name: analytics-pipeline-${{ github.run_number }}
+        path: |
+          analytics/
+        retention-days: 30
+    
+    - name: Upload Updated Data Files
+      uses: actions/upload-artifact@v3
+      if: ${{ success() }}
+      with:
+        name: updated-data-${{ github.run_number }}
+        path: |
+          data/oltp1_startups/*.db
+          data/oltp2_investors/*.db
+          data/csv_source/*.csv
+          data/api_cache/*.csv
+        retention-days: 7
+    
+    - name: Generate Summary Report
+      if: ${{ always() }}
+      run: |
+        echo "##  ETL Pipeline Execution Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Run Number:** ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+        echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Connection:** Supabase Session Pooler" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        if [ -f "data/oltp1_startups/startup_oltp.db" ]; then
+          python - <<'PY' >> $GITHUB_STEP_SUMMARY
+          import sqlite3
+          import pandas as pd
+
+          conn = sqlite3.connect('data/oltp1_startups/startup_oltp.db')
+          startups = pd.read_sql('SELECT COUNT(*) as count FROM startups', conn)
+          funding = pd.read_sql('SELECT COUNT(*) as count FROM funding_rounds', conn)
+          revenue = pd.read_sql('SELECT COUNT(*) as count FROM revenue_metrics', conn)
+          conn.close()
+
+          print(f'**Startups:** {startups["count"].iloc[0]}')
+          print(f'**Funding Rounds:** {funding["count"].iloc[0]}')
+          print(f'**Revenue Records:** {revenue["count"].iloc[0]}')
+          PY
+        fi
