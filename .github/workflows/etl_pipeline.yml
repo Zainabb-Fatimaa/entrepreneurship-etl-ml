@@ -154,30 +154,3 @@ jobs:
           data/api_cache/*.csv
         retention-days: 7
     
-    - name: Generate Summary Report
-      if: ${{ always() }}
-      run: |
-        echo "##  ETL Pipeline Execution Summary" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Run Number:** ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
-        echo "**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
-        echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
-        echo "**Connection:** Supabase Session Pooler" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-
-        if [ -f "data/oltp1_startups/startup_oltp.db" ]; then
-          python - <<'PY' >> $GITHUB_STEP_SUMMARY
-          import sqlite3
-          import pandas as pd
-
-          conn = sqlite3.connect('data/oltp1_startups/startup_oltp.db')
-          startups = pd.read_sql('SELECT COUNT(*) as count FROM startups', conn)
-          funding = pd.read_sql('SELECT COUNT(*) as count FROM funding_rounds', conn)
-          revenue = pd.read_sql('SELECT COUNT(*) as count FROM revenue_metrics', conn)
-          conn.close()
-
-          print(f'**Startups:** {startups["count"].iloc[0]}')
-          print(f'**Funding Rounds:** {funding["count"].iloc[0]}')
-          print(f'**Revenue Records:** {revenue["count"].iloc[0]}')
-          PY
-        fi
