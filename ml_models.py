@@ -4,9 +4,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_absolute_error
 from sqlalchemy import create_engine, text
 import warnings
@@ -19,15 +18,13 @@ load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# PostgreSQL connection details (Session Pooler for IPv4 compatibility)
-DB_HOST = os.getenv('DB_HOST')  # aws-1-ap-southeast-1.pooler.supabase.com
-DB_NAME = os.getenv('DB_NAME')  # postgres
-DB_USER = os.getenv('DB_USER')  # postgres.bfbsqzaygxvdyfvzfmgd
+DB_HOST = os.getenv('DB_HOST')
+DB_NAME = os.getenv('DB_NAME')
+DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_PORT = os.getenv('DB_PORT', '5432')
+DB_PORT = os.getenv('DB_PORT', '6543')
 DB_SSLMODE = os.getenv('DB_SSLMODE', 'require')
 
-# Define base paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ANALYTICS_DIR = os.path.join(BASE_DIR, 'analytics')
 
@@ -45,7 +42,6 @@ def get_sqlalchemy_engine():
         connection_string = f"postgresql://{DB_USER}:{encoded_password}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode={DB_SSLMODE}"
         engine = create_engine(connection_string, pool_pre_ping=True)
         
-        # Test the connection
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         
@@ -58,19 +54,13 @@ def get_sqlalchemy_engine():
         logging.error("="*70)
         logging.error(f"Error: {e}")
         logging.error("\nTroubleshooting steps:")
-        logging.error("1. Verify your .env file has the correct Session Pooler settings:")
-        logging.error("   DB_HOST=aws-1-ap-southeast-1.pooler.supabase.com")
-        logging.error("   DB_PORT=5432")
-        logging.error("   DB_USER=postgres.bfbsqzaygxvdyfvzfmgd")
-        logging.error("   DB_PASSWORD=[your-password]")
-        logging.error("   DB_SSLMODE=require")
+        logging.error("1. Verify your .env file has the correct Session Pooler settings")
         logging.error("2. Ensure your Supabase project is not paused (free tier)")
         logging.error("="*70)
         return None
 
 
 def run_ml_models():
-    # Create analytics directory if it doesn't exist
     os.makedirs(ANALYTICS_DIR, exist_ok=True)
     
     print("\n" + "="*70)
@@ -78,7 +68,7 @@ def run_ml_models():
     print("="*70)
 
     logging.info("\n[1/7] Importing libraries...")
-    logging.info(" Libraries imported!")
+    logging.info("Libraries imported!")
 
     logging.info("\n[2/7] Loading data from entrepreneurship data warehouse (PostgreSQL)...")
 
@@ -207,9 +197,12 @@ def run_ml_models():
                         'Total Investors', 'Industry', 'Business Model'],
             'Importance': clf_success.feature_importances_
         }).sort_values('Importance', ascending=False)
+        
+        feature_importance['Percentage'] = (feature_importance['Importance'] * 100).round(1)
 
         print("\n  Feature Importance:")
-        print(feature_importance.to_string(index=False))
+        for _, row in feature_importance.iterrows():
+            print(f"    {row['Feature']:<20} {row['Importance']:.4f} ({row['Percentage']:.1f}%)")
 
         fig_success = px.bar(
             feature_importance,
@@ -218,7 +211,21 @@ def run_ml_models():
             orientation='h',
             title='Startup Success Prediction - Feature Importance',
             color='Importance',
-            color_continuous_scale='Viridis'
+            color_continuous_scale='Viridis',
+            text='Percentage'
+        )
+        
+        fig_success.update_traces(
+            texttemplate='%{text:.1f}%',
+            textposition='outside'
+        )
+        
+        fig_success.update_layout(
+            height=500,
+            width=900,
+            xaxis_title='Importance Score',
+            yaxis_title='Feature',
+            showlegend=False
         )
 
         success_path = os.path.join(ANALYTICS_DIR, 'success_prediction.html')
@@ -237,43 +244,124 @@ def run_ml_models():
     if not funding_data.empty:
         reg_features = funding_data[funding_data['amount_raised'] > 0].copy()
 
-        if not reg_features.empty:
+        if not reg_features.empty and len(reg_features) > 10:
             le_industry_reg = LabelEncoder()
             le_round_reg = LabelEncoder()
             le_investor_type_reg = LabelEncoder()
+            le_stage_reg = LabelEncoder()
 
             reg_features['industry_encoded'] = le_industry_reg.fit_transform(reg_features['industry'])
             reg_features['round_encoded'] = le_round_reg.fit_transform(reg_features['round_type'])
             reg_features['investor_type_encoded'] = le_investor_type_reg.fit_transform(reg_features['investor_type'])
-
-            X_reg = reg_features[[
-                'employee_count', 'number_of_investors',
-                'industry_encoded', 'round_encoded', 'investor_type_encoded'
-            ]].fillna(0)
-
-            y_reg = reg_features['amount_raised']
-
-            if len(X_reg) > 1:
-                X_train_reg, X_test_reg, y_train_reg, y_test_reg = train_test_split(
-                    X_reg, y_reg, test_size=0.3, random_state=42
+            reg_features['stage_encoded'] = le_stage_reg.fit_transform(reg_features['stage'])
+            
+            reg_features['valuation_filled'] = reg_features['valuation'].fillna(reg_features['valuation'].median())
+            
+            if 'valuation_multiple' in reg_features.columns:
+                reg_features['valuation_multiple_filled'] = reg_features['valuation_multiple'].fillna(
+                    reg_features['valuation_multiple'].median()
                 )
+            else:
+                reg_features['valuation_multiple_filled'] = 0
+            
+            reg_features['investors_x_employees'] = reg_features['number_of_investors'] * reg_features['employee_count']
+            reg_features['valuation_per_investor'] = reg_features['valuation_filled'] / (reg_features['number_of_investors'] + 1)
+            reg_features['valuation_per_employee'] = reg_features['valuation_filled'] / (reg_features['employee_count'] + 1)
+            
+            reg_features['year_normalized'] = (reg_features['year'] - reg_features['year'].min()) / (reg_features['year'].max() - reg_features['year'].min() + 1)
+            reg_features['quarter_encoded'] = reg_features['quarter']
+            
+            reg_features['valuation_squared'] = reg_features['valuation_filled'] ** 2
+            reg_features['valuation_log'] = np.log1p(reg_features['valuation_filled'])
+            
+            feature_cols = [
+                'employee_count', 'number_of_investors',
+                'valuation_filled', 'valuation_squared', 'valuation_log',
+                'valuation_multiple_filled',
+                'investors_x_employees', 'valuation_per_investor', 'valuation_per_employee',
+                'industry_encoded', 'round_encoded', 'investor_type_encoded',
+                'stage_encoded', 'year_normalized', 'quarter_encoded'
+            ]
+            
+            X_reg = reg_features[feature_cols].fillna(0)
+            y_reg = reg_features['amount_raised']
+            
+            y_reg_log = np.log1p(y_reg)
 
-                reg_model = RandomForestRegressor(n_estimators=100, random_state=42, max_depth=10)
-                reg_model.fit(X_train_reg, y_train_reg)
+            if len(X_reg) > 20:
+                X_train_reg, X_test_reg, y_train_reg, y_test_reg = train_test_split(
+                    X_reg, y_reg_log, test_size=0.3, random_state=42
+                )
+                
+                scaler_reg = StandardScaler()
+                X_train_scaled = scaler_reg.fit_transform(X_train_reg)
+                X_test_scaled = scaler_reg.transform(X_test_reg)
 
-                y_pred = reg_model.predict(X_test_reg)
+                rf_model = RandomForestRegressor(
+                    n_estimators=500, 
+                    random_state=42, 
+                    max_depth=25,
+                    min_samples_split=2,
+                    min_samples_leaf=1,
+                    max_features='sqrt',
+                    n_jobs=-1
+                )
+                
+                gb_model = GradientBoostingRegressor(
+                    n_estimators=500,
+                    learning_rate=0.05,
+                    max_depth=8,
+                    min_samples_split=2,
+                    min_samples_leaf=1,
+                    subsample=0.8,
+                    random_state=42
+                )
+                
+                print("  Training Random Forest model...")
+                rf_model.fit(X_train_scaled, y_train_reg)
+                print("  Training Gradient Boosting model...")
+                gb_model.fit(X_train_scaled, y_train_reg)
+                
+                y_pred_rf_log = rf_model.predict(X_test_scaled)
+                y_pred_gb_log = gb_model.predict(X_test_scaled)
+                y_pred_log = 0.5 * y_pred_rf_log + 0.5 * y_pred_gb_log
+                
+                y_pred = np.expm1(y_pred_log)
+                y_test_actual = np.expm1(y_test_reg)
 
-                r2 = r2_score(y_test_reg, y_pred)
-                mae = mean_absolute_error(y_test_reg, y_pred)
+                r2 = r2_score(y_test_actual, y_pred)
+                mae = mean_absolute_error(y_test_actual, y_pred)
+                mape = np.mean(np.abs((y_test_actual - y_pred) / (y_test_actual + 1))) * 100
+                
+                y_train_pred_rf_log = rf_model.predict(X_train_scaled)
+                y_train_pred_gb_log = gb_model.predict(X_train_scaled)
+                y_train_pred_log = 0.5 * y_train_pred_rf_log + 0.5 * y_train_pred_gb_log
+                y_train_pred = np.expm1(y_train_pred_log)
+                y_train_actual = np.expm1(y_train_reg)
+                r2_train = r2_score(y_train_actual, y_train_pred)
 
-                print(f"\n Funding Amount Prediction Model:")
-                print(f"  R² Score: {r2:.3f}")
+                print(f"\n Funding Amount Prediction Model (Ensemble: RF + GradientBoosting):")
+                print(f"  R² Score (Train): {r2_train:.3f}")
+                print(f"  R² Score (Test): {r2:.3f}")
                 print(f"  Mean Absolute Error: ${mae:,.0f}")
-                print(f"  Average Actual Funding: ${y_test_reg.mean():,.0f}")
+                print(f"  Mean Absolute Percentage Error: {mape:.2f}%")
+                print(f"  Average Actual Funding: ${y_test_actual.mean():,.0f}")
                 print(f"  Average Predicted Funding: ${y_pred.mean():,.0f}")
+                
+                feature_imp = pd.DataFrame({
+                    'Feature': feature_cols,
+                    'RF_Importance': rf_model.feature_importances_,
+                    'GB_Importance': gb_model.feature_importances_
+                })
+                feature_imp['Avg_Importance'] = (feature_imp['RF_Importance'] + feature_imp['GB_Importance']) / 2
+                feature_imp = feature_imp.sort_values('Avg_Importance', ascending=False)
+                
+                print("\n  Top 8 Features:")
+                for _, row in feature_imp.head(8).iterrows():
+                    print(f"    {row['Feature']:<30} {row['Avg_Importance']:.4f}")
 
                 comparison_df = pd.DataFrame({
-                    'Actual': y_test_reg.values,
+                    'Actual': y_test_actual,
                     'Predicted': y_pred
                 })
 
@@ -281,16 +369,27 @@ def run_ml_models():
                     comparison_df,
                     x='Actual',
                     y='Predicted',
-                    title='Funding Amount: Actual vs Predicted',
+                    title=f'Funding Amount: Actual vs Predicted (Ensemble Model)<br>R² = {r2:.3f}, MAE = ${mae:,.0f}',
                     labels={'Actual': 'Actual Funding ($)', 'Predicted': 'Predicted Funding ($)'},
+                    opacity=0.6,
                     trendline='ols'
                 )
 
+                max_val = max(comparison_df['Actual'].max(), comparison_df['Predicted'].max())
                 fig_reg.add_trace(
-                    go.Scatter(x=[0, comparison_df['Actual'].max()],
-                               y=[0, comparison_df['Actual'].max()],
-                               mode='lines', name='Perfect Prediction',
-                               line=dict(dash='dash', color='red'))
+                    go.Scatter(
+                        x=[0, max_val],
+                        y=[0, max_val],
+                        mode='lines', 
+                        name='Perfect Prediction',
+                        line=dict(dash='dash', color='red', width=2)
+                    )
+                )
+                
+                fig_reg.update_layout(
+                    showlegend=True,
+                    height=600,
+                    width=900
                 )
 
                 funding_pred_path = os.path.join(ANALYTICS_DIR, 'funding_prediction.html')
@@ -299,15 +398,15 @@ def run_ml_models():
 
                 print(f" Funding prediction model completed: {funding_pred_path}")
             else:
-                print(" Not enough data after filtering for funding amount prediction.")
+                print(" Not enough data points (need at least 20).")
                 r2 = None
                 mae = None
         else:
-            print(" No data with amount_raised > 0 for Funding Amount Prediction.")
+            print(" Not enough data with amount_raised > 0.")
             r2 = None
             mae = None
     else:
-        print(" No funding data available for Funding Amount Prediction.")
+        print(" No funding data available.")
         r2 = None
         mae = None
 
@@ -354,7 +453,6 @@ def run_ml_models():
             }
             investor_metrics['cluster_name'] = investor_metrics['cluster'].map(cluster_names_map)
 
-
             print("\n Investor Cluster Analysis:")
             cluster_summary = investor_metrics.groupby('cluster_name').agg({
                 'deal_count': 'mean',
@@ -396,16 +494,12 @@ def run_ml_models():
     print("  ANALYTICS & ML PIPELINE COMPLETED SUCCESSFULLY!")
     print("="*80)
     print("\n ANALYTICS OUTPUTS:")
-    print(f"   Comprehensive Dashboard: {os.path.join(ANALYTICS_DIR, 'entrepreneurship_dashboard.html')}")
-    print(f"   Success Prediction Model: {os.path.join(ANALYTICS_DIR, 'success_prediction.html')} (Accuracy: {test_score:.2%})" if test_score is not None else "   Success Prediction Model: Not enough data.")
-    print(f"   Funding Prediction Model: {os.path.join(ANALYTICS_DIR, 'funding_prediction.html')} (R²: {r2:.3f})" if r2 is not None else "   Funding Prediction Model: Not enough data.")
+    print(f"   Success Prediction: {os.path.join(ANALYTICS_DIR, 'success_prediction.html')} (Accuracy: {test_score:.2%})" if test_score is not None else "   Success Prediction: Not enough data.")
+    print(f"   Funding Prediction: {os.path.join(ANALYTICS_DIR, 'funding_prediction.html')} (R²: {r2:.3f})" if r2 is not None else "   Funding Prediction: Not enough data.")
     print(f"   Investor Clustering: {os.path.join(ANALYTICS_DIR, 'investor_clusters.html')} ({num_investor_segments} segments)" if num_investor_segments > 0 else "   Investor Clustering: Not enough data.")
     print("\n FILES CREATED:")
-    print(f"  All visualization HTML files are in {ANALYTICS_DIR}/")
+    print(f"  All HTML files in {ANALYTICS_DIR}/")
     print("\n" + "="*80)
-    print("  ANALYTICS & ML DONE!")
-    print("="*80)
-
 
 if __name__ == "__main__":
     run_ml_models()
